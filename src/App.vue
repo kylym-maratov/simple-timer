@@ -29,7 +29,8 @@ export default {
       this.timers.push({
         id: uuid.v4(),
         count: 0,
-        isRunning: false
+        isRunning: false,
+        shots: []
       })
     },
     removeTimer(ev) {

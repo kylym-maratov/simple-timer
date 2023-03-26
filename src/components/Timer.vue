@@ -2,6 +2,7 @@
 import StartIcon from './icons/Start.vue'
 import StopIcon from './icons/Stop.vue'
 import PauseIcon from './icons/Pause.vue'
+import ShotIcon from "./icons/Shot.vue"
 
 function toHoursAndMinutes(totalSeconds) {
   const totalMinutes = Math.floor(totalSeconds / 60)
@@ -22,13 +23,19 @@ function toHoursAndMinutes(totalSeconds) {
     }">
       <span>{{ toHoursAndMinutes(timer.count) }}</span>
     </div>
+    <div class="timer__shots" v-for="shot in timer.shots" :style="{ color: timer.isRunning ? '#ffff' : '#9E9E9E' }">
+      <span>{{ toHoursAndMinutes(shot) }}</span>
+    </div>
     <div class="timer_control">
       <button type="button" class="timer_btn start_btn" @click="startTimer">
         <StartIcon v-if="timer.count >= 0 && !timer.isRunning" fill="#9E9E9E" />
         <PauseIcon v-else fill="#ffff" />
       </button>
-      <button type="button" class="timer_btn stop_btn" @click="clearTimer">
+      <button type="button" class="timer_btn stop_btn" @click="clearTimer" :disabled="!timer.isRunning">
         <StopIcon :fill="timer.isRunning ? '#ffff' : '#9E9E9E'" />
+      </button>
+      <button type="button" class="timer_btn stop_btn" @click="shotTimer" :disabled="!timer.isRunning">
+        <ShotIcon :fill="timer.isRunning ? '#ffff' : '#9E9E9E'" />
       </button>
     </div>
   </div>
@@ -71,6 +78,13 @@ export default {
         this.pauseTimer()
       }
     },
+
+    shotTimer() {
+      if (this.timer.count > 0 && this.timer.shots.length < 10) {
+        this.timer.shots.push(this.timer.count)
+      }
+    },
+
     pauseTimer() {
       this.timer.isRunning = false
       this.timerControl.clear()
@@ -79,6 +93,7 @@ export default {
       this.timer.count = 0
       this.timer.isRunning = false
       this.timerControl.clear()
+      this.timer.shots = []
     }
   }
 }
@@ -88,9 +103,12 @@ export default {
 .timer {
   margin: 10px;
   max-width: 225px;
-  height: 120px;
   background-color: #696969;
   border-radius: 5px;
+}
+
+.timer__shots {
+  text-align: center;
 }
 
 .timer__screen {
@@ -117,5 +135,9 @@ export default {
   width: 20px;
   height: 20px;
   cursor: pointer;
+}
+
+.timer_btn:disabled {
+  cursor: not-allowed;
 }
 </style>
