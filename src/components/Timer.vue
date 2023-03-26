@@ -2,7 +2,6 @@
 import StartIcon from './icons/Start.vue'
 import StopIcon from './icons/Stop.vue'
 import PauseIcon from './icons/Pause.vue'
-import CloseTimerIcon from './icons/Close.vue'
 
 function toHoursAndMinutes(totalSeconds) {
   const totalMinutes = Math.floor(totalSeconds / 60)
@@ -17,16 +16,10 @@ function toHoursAndMinutes(totalSeconds) {
 
 <template>
   <div class="timer">
-    <button class="timer_btn close_btn" :id="timerId" @click="removeTimer">
-      <CloseTimerIcon />
-    </button>
-    <div
-      class="timer__screen"
-      :style="{
-        color: timer.isRunning ? '#ffff' : '#9E9E9E',
-        borderBottom: timer.isRunning ? '1px solid #ffff' : '1px solid #9E9E9E'
-      }"
-    >
+    <div class="timer__screen" :style="{
+      color: timer.isRunning ? '#ffff' : '#9E9E9E',
+      borderBottom: timer.isRunning ? '1px solid #ffff' : '1px solid #9E9E9E'
+    }">
       <span>{{ toHoursAndMinutes(timer.count) }}</span>
     </div>
     <div class="timer_control">
@@ -43,17 +36,49 @@ function toHoursAndMinutes(totalSeconds) {
 
 <script>
 export default {
-  props: ['timer', 'startTimer', 'removeTimer', 'timerId', 'clearTimer'],
+  props: ['timer', "timerId"],
 
-  watch: {
-    timer: {
-      deep: true,
-      immediate: true,
-      handler: function (val) {
-        if (val.count >= 0 && val.isRunning) {
-          setTimeout(() => val.count++, 1000)
-        }
+  data: function () {
+    return {
+      timerControl: null
+    }
+  },
+
+  methods: {
+    nextTick: (doStep, time = 1000) => {
+      let nextAt, timeout
+      nextAt = new Date().getTime() + time
+
+      const wrapper = () => {
+        nextAt += time;
+        timeout = setTimeout(wrapper, nextAt - new Date().getTime())
+        doStep()
       }
+
+      timeout = setTimeout(wrapper, nextAt - new Date().getTime())
+
+      const clear = () => clearTimeout(timeout)
+
+      return { clear };
+    },
+
+    startTimer() {
+      if (!this.timer.isRunning) {
+        const timerControl = this.nextTick(() => this.timer.count++)
+        this.timer.isRunning = true
+        this.timerControl = timerControl
+      } else {
+        this.pauseTimer()
+      }
+    },
+    pauseTimer() {
+      this.timer.isRunning = false
+      this.timerControl.clear()
+    },
+    clearTimer() {
+      this.timer.count = 0
+      this.timer.isRunning = false
+      this.timerControl.clear()
     }
   }
 }
@@ -84,9 +109,6 @@ export default {
   padding: 20px 50px;
 }
 
-.close_btn {
-  position: absolute;
-}
 
 .timer_btn {
   background: none;

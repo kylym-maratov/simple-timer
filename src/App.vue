@@ -1,18 +1,16 @@
 <script setup>
 import Timer from './components/Timer.vue'
 import AddTimerIcon from './components/icons/Add.vue'
+import CloseTimerIcon from './components/icons/Close.vue'
 </script>
 
 <template>
   <main class="main">
     <div v-for="(timer, timerId) in timers" :key="timerId">
-      <Timer
-        :timer="timer"
-        :timerId="timerId"
-        :clearTimer="clearTimer"
-        :startTimer="startTimer"
-        :removeTimer="removeTimer"
-      />
+      <button class="timer_btn close_btn" :id="timerId" @click="removeTimer">
+        <CloseTimerIcon />
+      </button>
+      <Timer :timer="timer" :timerId="timerId" />
     </div>
     <div class="add__timer" @click="addTimer">
       <AddTimerIcon />
@@ -36,16 +34,6 @@ export default {
       const timerId = this.timers.findIndex((item, i) => i === Number(ev.currentTarget.id))
       this.timers.splice(timerId, 1)
     },
-    startTimer(ev) {
-      this.timers = this.timers.map((item, i) =>
-        i === Number(ev.currentTarget.id) ? { ...item, isRunning: !item.isRunning } : item
-      )
-    },
-    clearTimer(ev) {
-      this.timers = this.timers.map((item, i) =>
-        i === Number(ev.currentTarget.id) ? { isRunning: false, count: 0 } : item
-      )
-    }
   }
 }
 </script>
@@ -65,6 +53,10 @@ export default {
   background-color: #696969;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.close_btn {
+  position: absolute;
 }
 
 @media (max-width: 600px) {
