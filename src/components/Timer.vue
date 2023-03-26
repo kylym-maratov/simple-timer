@@ -23,11 +23,11 @@ function toHoursAndMinutes(totalSeconds) {
       <span>{{ toHoursAndMinutes(timer.count) }}</span>
     </div>
     <div class="timer_control">
-      <button type="button" :id="timerId" class="timer_btn start_btn" @click="startTimer">
+      <button type="button" class="timer_btn start_btn" @click="startTimer">
         <StartIcon v-if="timer.count >= 0 && !timer.isRunning" fill="#9E9E9E" />
         <PauseIcon v-else fill="#ffff" />
       </button>
-      <button type="button" :id="timerId" class="timer_btn stop_btn" @click="clearTimer">
+      <button type="button" class="timer_btn stop_btn" @click="clearTimer">
         <StopIcon :fill="timer.isRunning ? '#ffff' : '#9E9E9E'" />
       </button>
     </div>
@@ -36,7 +36,7 @@ function toHoursAndMinutes(totalSeconds) {
 
 <script>
 export default {
-  props: ['timer', "timerId"],
+  props: ['timer'],
 
   data: function () {
     return {

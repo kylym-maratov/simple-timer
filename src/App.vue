@@ -2,15 +2,16 @@
 import Timer from './components/Timer.vue'
 import AddTimerIcon from './components/icons/Add.vue'
 import CloseTimerIcon from './components/icons/Close.vue'
+import * as uuid from "uuid"
 </script>
 
 <template>
   <main class="main">
-    <div v-for="(timer, timerId) in timers" :key="timerId">
-      <button class="timer_btn close_btn" :id="timerId" @click="removeTimer">
+    <div v-for="(timer) in timers" :key="timer.id">
+      <button class="timer_btn close_btn" :id="timer.id" @click="removeTimer">
         <CloseTimerIcon />
       </button>
-      <Timer :timer="timer" :timerId="timerId" />
+      <Timer :timer="timer" />
     </div>
     <div class="add__timer" @click="addTimer">
       <AddTimerIcon />
@@ -26,13 +27,14 @@ export default {
   methods: {
     addTimer() {
       this.timers.push({
+        id: uuid.v4(),
         count: 0,
         isRunning: false
       })
     },
     removeTimer(ev) {
-      const timerId = this.timers.findIndex((item, i) => i === Number(ev.currentTarget.id))
-      this.timers.splice(timerId, 1)
+      const index = this.timers.findIndex((item) => item.id === ev.currentTarget.id)
+      this.timers.splice(index, 1)
     },
   }
 }
